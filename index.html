@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>You Are Mighty</title>
+  <meta name="description" content="An epic personal declaration of greatness.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="You Are Mighty">
+  <meta property="og:description" content="An epic personal declaration of greatness.">
+  <meta property="og:image" content="https://images.pexels.com/photos/1431822/pexels-photo-1431822.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="You Are Mighty">
+  <meta name="twitter:description" content="An epic personal declaration of greatness.">
+  <meta name="twitter:image" content="https://images.pexels.com/photos/1431822/pexels-photo-1431822.jpeg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --gold:      #FFD700;
+      --gold-mid:  #FFA500;
+      --gold-deep: #FF8C00;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #0b0b1a 0%, #1a0a00 50%, #0b0b1a 100%);
+      overflow: hidden;
+      font-family: 'Cinzel Decorative', Georgia, serif;
+    }
+
+    /* ── Background video ─────────────────────────────────── */
+    #bg-video {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.32) saturate(1.3);
+    }
+
+    /* ── Vignette ─────────────────────────────────────────── */
+    .vignette {
+      position: fixed; inset: 0; z-index: 1;
+      background: radial-gradient(ellipse at center,
+        transparent 25%, rgba(0,0,0,0.65) 100%);
+      pointer-events: none;
+    }
+
+    /* ── Particle canvas ──────────────────────────────────── */
+    #canvas {
+      position: fixed; inset: 0; z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ── Screen flash ─────────────────────────────────────── */
+    #flash {
+      position: fixed; inset: 0; z-index: 8;
+      pointer-events: none;
+      background: var(--gold);
+      opacity: 0;
+      will-change: opacity;
+    }
+
+    /* ── Entry screen ─────────────────────────────────────── */
+    #entry {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2.8rem;
+      background: rgba(0,0,0,0.88);
+      transition: opacity 0.7s ease;
+    }
+
+    #entry-title {
+      font-size: clamp(2.2rem, 7vw, 5.5rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-align: center;
+      padding: 0 1.5rem;
+      letter-spacing: 0.14em;
+      text-shadow:
+        0 0 30px var(--gold),
+        0 0 70px var(--gold-mid),
+        3px 3px 0 #000, -1px -1px 0 #000,
+        1px -1px 0 #000, -1px 1px 0 #000;
+      animation: entryPulse 3.5s ease-in-out infinite;
+    }
+
+    @keyframes entryPulse {
+      0%,100% { text-shadow: 0 0 25px var(--gold), 0 0 50px var(--gold-mid), 3px 3px 0 #000; }
+      50%      { text-shadow: 0 0 50px var(--gold), 0 0 100px var(--gold-mid), 0 0 160px var(--gold-deep), 3px 3px 0 #000; }
+    }
+
+    #start-btn {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(0.85rem, 2.4vw, 1.25rem);
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: #000;
+      background: linear-gradient(90deg, #7a5900, var(--gold), #fffde7, var(--gold), #7a5900);
+      background-size: 350% 100%;
+      border: none;
+      padding: 1.1rem 3.2rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      animation: btnShimmer 3.2s linear infinite;
+      box-shadow:
+        0 0 22px var(--gold),
+        0 0 50px rgba(255,215,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    #start-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 40px var(--gold), 0 0 90px rgba(255,215,0,0.55);
+    }
+    #start-btn:active { transform: scale(0.97); }
+
+    @keyframes btnShimmer {
+      0%   { background-position: 350% 0; }
+      100% { background-position: 0%   0; }
+    }
+
+    /* ── Stage ────────────────────────────────────────────── */
+    #stage {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      padding: 3rem;
+    }
+
+    #phrase {
+      font-size: clamp(1.7rem, 4.5vw, 4.2rem);
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+      max-width: 880px;
+      line-height: 1.22;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: opacity 0.38s ease-in-out;
+      text-shadow:
+        0 0 18px var(--gold),
+        0 0 40px var(--gold-mid),
+        3px 3px 0 #000,
+        -1px -1px 0 rgba(0,0,0,0.9),
+         1px -1px 0 rgba(0,0,0,0.9),
+        -1px  1px 0 rgba(0,0,0,0.9);
+      will-change: opacity;
+    }
+    #phrase.visible { opacity: 1; }
+
+    #phrase.climax {
+      font-size: clamp(3rem, 11vw, 9.5rem);
+      letter-spacing: 0.07em;
+      animation: climaxPulse 0.55s ease-in-out infinite alternate;
+    }
+
+    @keyframes climaxPulse {
+      from {
+        color: var(--gold);
+        text-shadow:
+          0 0 25px var(--gold), 0 0 60px var(--gold-mid),
+          0 0 110px rgba(255,165,0,0.4), 3px 3px 0 #000;
+      }
+      to {
+        color: #fff;
+        text-shadow:
+          0 0 35px #fff, 0 0 70px var(--gold),
+          0 0 130px var(--gold-mid), 0 0 220px rgba(255,165,0,0.5),
+          3px 3px 0 #000;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    VIDEO: Pexels "Storm Clouds" time-lapse (free to use).
+    Replace src with your own hosted video for production.
+  -->
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="https://videos.pexels.com/video-files/856974/856974-hd_1920_1080_25fps.mp4" type="video/mp4">
+  </video>
+  <div class="vignette"></div>
+  <canvas id="canvas"></canvas>
+  <div id="flash"></div>
+
+  <!-- Entry screen -->
+  <div id="entry">
+    <h1 id="entry-title">YOU ARE MIGHTY</h1>
+    <button id="start-btn">✦ &nbsp;RECEIVE YOUR DESTINY&nbsp; ✦</button>
+  </div>
+
+  <!-- Text stage -->
+  <div id="stage"><p id="phrase"></p></div>
+
+  <!--
+    AUDIO: Replace src with a hosted epic/orchestral MP3.
+    Free sources: pixabay.com/music · incompetech.com · freepd.com
+    If empty or blocked, the visual experience still runs.
+  -->
+  <audio id="audio" loop preload="none">
+    <source src="/music test 1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+  (() => {
+    /* ── Name from URL path ──────────────────────────────────── */
+    const seg = window.location.pathname.split('/').filter(Boolean)[0] || '';
+    const name = seg
+      ? seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase()
+      : 'You';
+    const nl = name.toLowerCase(); // name lowercase
+
+    /* ── Dynamic meta ────────────────────────────────────────── */
+    document.title = `${name} — You Are Mighty`;
+    const desc = `${name}, you are mighty. The world bows to your spirit.`;
+    document.querySelector('meta[name="description"]').content = desc;
+    document.querySelector('meta[property="og:title"]').content = `${name} — You Are Mighty`;
+    document.querySelector('meta[property="og:description"]').content = desc;
+    document.querySelector('meta[name="twitter:title"]').content = `${name} — You Are Mighty`;
+    document.querySelector('meta[name="twitter:description"]').content = desc;
+
+    /* ── Sequence ────────────────────────────────────────────── */
+    // pause = ms the text is visible after fade-in completes
+    // punch = brief screen flash for impact lines
+    // climax = full gold burst + particles
+    const SEQ = [
+      { t: `${name}...`,                                   p: 1000 },
+      { t: `Today, the world may seem small.`,             p: 1500 },
+      { t: `Its challenges, immense.`,                     p: 1500 },
+      { t: `But you are not defined by obstacles.`,        p: 1800 },
+      { t: `You are defined by your spirit.`,              p: 1800 },
+      { t: `${name}...`,                                   p: 1000 },
+      { t: `The mountains you face?`,                      p: 1500 },
+      { t: `THEY ARE DUST!`,                               p: 1500, punch: true },
+      { t: `The oceans you must cross?`,                   p: 1500 },
+      { t: `A MERE PUDDLE!`,                               p: 1500, punch: true },
+      { t: `Because you have the power...`,                p: 1800 },
+      { t: `...to reshape destiny.`,                       p: 1800 },
+      { t: `${name}...`,                                   p: 1000 },
+      { t: `The shadows retreat from your light.`,         p: 2000 },
+      { t: `The very stars align for your purpose.`,       p: 2000 },
+      { t: `So rise...`,                                   p: 1500 },
+      { t: `Rise above it all.`,                           p: 1800 },
+      { t: `Do not just survive.`,                         p: 1800 },
+      { t: `CONQUER!`,                                     p: 1000, punch: true },
+      { t: `Because ${name}...`,                           p: 1000 },
+      { t: `${nl}.youaremighty.com`,                       p: 2000 },
+      { t: `YOU ARE MIGHTY!`,                              p: 4000, climax: true },
+      { t: ``,                                             p: 2500 }, // silent beat before loop
+    ];
+
+    /* ── DOM refs ────────────────────────────────────────────── */
+    const phraseEl = document.getElementById('phrase');
+    const flashEl  = document.getElementById('flash');
+    const canvas   = document.getElementById('canvas');
+    const ctx      = canvas.getContext('2d');
+    const audio    = document.getElementById('audio');
+    const entryEl  = document.getElementById('entry');
+
+    /* ── Canvas resize ───────────────────────────────────────── */
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    /* ── Particle system ─────────────────────────────────────── */
+    let sparks = [];
+    let spawnTimer = null;
+
+    function addSpark() {
+      sparks.push({
+        x: Math.random() * canvas.width,
+        y: canvas.height + 4,
+        vx: (Math.random() - 0.5) * 2.4,
+        vy: -(Math.random() * 3.5 + 1.5),
+        r: Math.random() * 3.2 + 0.8,
+        a: 1,
+        gold: Math.random() > 0.4,
+      });
+    }
+
+    function drawSparks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      sparks = sparks.filter(s => s.a > 0.015);
+      for (const s of sparks) {
+        ctx.save();
+        ctx.globalAlpha = s.a;
+        ctx.shadowColor  = s.gold ? '#FFD700' : '#FFA500';
+        ctx.shadowBlur   = 10;
+        ctx.fillStyle    = s.gold ? '#FFD700' : '#FFA500';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        s.x += s.vx;
+        s.y += s.vy;
+        s.a -= 0.011;
+      }
+      requestAnimationFrame(drawSparks);
+    }
+    drawSparks(); // always running; only sparks[] has content during climax
+
+    function startSparks() {
+      spawnTimer = setInterval(addSpark, 28);
+    }
+    function stopSparks() {
+      clearInterval(spawnTimer);
+      spawnTimer = null;
+    }
+
+    /* ── Flash effect ────────────────────────────────────────── */
+    function flash(intensity = 0.28) {
+      flashEl.style.transition = 'none';
+      flashEl.style.opacity = intensity;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        flashEl.style.transition = 'opacity 0.7s ease';
+        flashEl.style.opacity = 0;
+      }));
+    }
+
+    /* ── Sequencer ───────────────────────────────────────────── */
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    async function show(slide) {
+      phraseEl.classList.remove('visible', 'climax');
+      await sleep(360); // wait for fade-out
+
+      if (!slide.t) { await sleep(slide.p); return; }
+
+      phraseEl.textContent = slide.t;
+      if (slide.climax) phraseEl.classList.add('climax');
+      phraseEl.classList.add('visible');
+
+      if (slide.climax) { startSparks(); flash(0.22); }
+      else if (slide.punch) { flash(0.13); }
+
+      await sleep(slide.p);
+      if (slide.climax) stopSparks();
+    }
+
+    async function loop() {
+      for (;;) for (const slide of SEQ) await show(slide);
+    }
+
+    /* ── Start button ────────────────────────────────────────── */
+    document.getElementById('start-btn').addEventListener('click', () => {
+      entryEl.style.opacity = '0';
+      setTimeout(() => { entryEl.style.display = 'none'; }, 700);
+
+      // Fade-in audio
+      audio.volume = 0;
+      audio.play().then(() => {
+        let v = 0;
+        const t = setInterval(() => {
+          v = Math.min(v + 0.018, 0.72);
+          audio.volume = v;
+          if (v >= 0.72) clearInterval(t);
+        }, 55);
+      }).catch(() => {
+        console.info('[YouAreMighty] Audio unavailable — add a hosted MP3 to the <audio> src.');
+      });
+
+      loop();
+    });
+  })();
+  </script>
+</body>
+</html>
