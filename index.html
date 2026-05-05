@@ -53,10 +53,7 @@
     }
 
     /* ── Particle canvas ──────────────────────────────────── */
-    #canvas {
-      position: fixed; inset: 0; z-index: 2;
-      pointer-events: none;
-    }
+    #canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
     /* ── Screen flash ─────────────────────────────────────── */
     #flash {
@@ -84,8 +81,7 @@
       padding: 0 1.5rem;
       letter-spacing: 0.14em;
       text-shadow:
-        0 0 30px var(--gold),
-        0 0 70px var(--gold-mid),
+        0 0 30px var(--gold), 0 0 70px var(--gold-mid),
         3px 3px 0 #000, -1px -1px 0 #000,
         1px -1px 0 #000, -1px 1px 0 #000;
       animation: entryPulse 3.5s ease-in-out infinite;
@@ -98,20 +94,19 @@
 
     #start-btn {
       font-family: 'Cinzel Decorative', serif;
-      font-size: clamp(0.85rem, 2.4vw, 1.25rem);
+      font-size: clamp(0.75rem, 2vw, 1.05rem);
       font-weight: 700;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.18em;
       color: #000;
       background: linear-gradient(90deg, #7a5900, var(--gold), #fffde7, var(--gold), #7a5900);
       background-size: 350% 100%;
       border: none;
-      padding: 1.1rem 3.2rem;
+      padding: 1.1rem 3rem;
       cursor: pointer;
       text-transform: uppercase;
       animation: btnShimmer 3.2s linear infinite;
       box-shadow:
-        0 0 22px var(--gold),
-        0 0 50px rgba(255,215,0,0.35),
+        0 0 22px var(--gold), 0 0 50px rgba(255,215,0,0.35),
         inset 0 1px 0 rgba(255,255,255,0.25);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
@@ -142,22 +137,82 @@
       line-height: 1.22;
       letter-spacing: 0.05em;
       opacity: 0;
-      transition: opacity 0.38s ease-in-out;
       text-shadow:
-        0 0 18px var(--gold),
-        0 0 40px var(--gold-mid),
+        0 0 18px var(--gold), 0 0 40px var(--gold-mid),
         3px 3px 0 #000,
         -1px -1px 0 rgba(0,0,0,0.9),
          1px -1px 0 rgba(0,0,0,0.9),
         -1px  1px 0 rgba(0,0,0,0.9);
-      will-change: opacity;
+      will-change: opacity, transform, filter;
     }
-    #phrase.visible { opacity: 1; }
 
+    /* ── Entrance keyframes ───────────────────────────────── */
+
+    /* Gentle lift from below — for meditative lines */
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(55px) scale(0.95); filter: blur(7px); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0);   }
+    }
+
+    /* Zoom in from distance — for name calls, intimate */
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(1.5); filter: blur(10px); }
+      to   { opacity: 1; transform: scale(1);   filter: blur(0);    }
+    }
+
+    /* Slam from above — for weight-bearing lines */
+    @keyframes descend {
+      from { opacity: 0; transform: translateY(-60px) scale(0.95); filter: blur(7px); }
+      to   { opacity: 1; transform: translateY(0)      scale(1);    filter: blur(0);   }
+    }
+
+    /* Horizontal drift from left — for narrative lines */
+    @keyframes driftIn {
+      from { opacity: 0; transform: translateX(-55px); filter: blur(5px); }
+      to   { opacity: 1; transform: translateX(0);     filter: blur(0);   }
+    }
+
+    /* Impact burst — for punch lines (DUST, PUDDLE, CONQUER) */
+    @keyframes slam {
+      0%   { opacity: 0; transform: scale(2.4);   filter: blur(14px); }
+      55%  { opacity: 1; transform: scale(0.93);  filter: blur(0);    }
+      75%  { transform: scale(1.04); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Surge from nothing — climax only */
+    @keyframes surge {
+      0%   { opacity: 0; transform: scale(0.25); filter: blur(12px); }
+      60%  { opacity: 1; transform: scale(1.1);  filter: blur(0);    }
+      80%  { transform: scale(0.97); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Exit */
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+
+    /* ── Animation classes ────────────────────────────────── */
+    .anim-rise    { animation: riseUp  0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-zoom    { animation: zoomIn  0.70s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-descend { animation: descend 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-drift   { animation: driftIn 0.90s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-slam    { animation: slam    0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-surge   { animation: surge   0.60s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    /* ── Climax size ──────────────────────────────────────── */
     #phrase.climax {
       font-size: clamp(3rem, 11vw, 9.5rem);
       letter-spacing: 0.07em;
-      animation: climaxPulse 0.55s ease-in-out infinite alternate;
+    }
+
+    /* Surge + climaxPulse chain (surge runs 0–0.6s, pulse starts at 0.65s) */
+    .anim-surge.climax {
+      animation:
+        surge      0.60s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+        climaxPulse 0.55s 0.65s ease-in-out infinite alternate;
     }
 
     @keyframes climaxPulse {
@@ -179,10 +234,6 @@
 </head>
 <body>
 
-  <!--
-    VIDEO: Pexels "Storm Clouds" time-lapse (free to use).
-    Replace src with your own hosted video for production.
-  -->
   <video id="bg-video" autoplay muted loop playsinline>
     <source src="https://videos.pexels.com/video-files/856974/856974-hd_1920_1080_25fps.mp4" type="video/mp4">
   </video>
@@ -190,32 +241,24 @@
   <canvas id="canvas"></canvas>
   <div id="flash"></div>
 
-  <!-- Entry screen -->
   <div id="entry">
     <h1 id="entry-title">YOU ARE MIGHTY</h1>
-    <button id="start-btn">✦ &nbsp;RECEIVE YOUR DESTINY&nbsp; ✦</button>
+    <button id="start-btn">✦ &nbsp;Turn on the audio and see what's in for you..&nbsp; ✦</button>
   </div>
 
-  <!-- Text stage -->
   <div id="stage"><p id="phrase"></p></div>
 
-  <!--
-    AUDIO: Replace src with a hosted epic/orchestral MP3.
-    Free sources: pixabay.com/music · incompetech.com · freepd.com
-    If empty or blocked, the visual experience still runs.
-  -->
   <audio id="audio" loop preload="none">
     <source src="/music test 1.mp3" type="audio/mpeg">
   </audio>
 
   <script>
   (() => {
-    /* ── Name from URL path ──────────────────────────────────── */
+    /* ── Name from URL ───────────────────────────────────────── */
     const seg = window.location.pathname.split('/').filter(Boolean)[0] || '';
     const name = seg
       ? seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase()
       : 'You';
-    const nl = name.toLowerCase(); // name lowercase
 
     /* ── Dynamic meta ────────────────────────────────────────── */
     document.title = `${name} — You Are Mighty`;
@@ -227,33 +270,33 @@
     document.querySelector('meta[name="twitter:description"]').content = desc;
 
     /* ── Sequence ────────────────────────────────────────────── */
-    // pause = ms the text is visible after fade-in completes
-    // punch = brief screen flash for impact lines
-    // climax = full gold burst + particles
+    // p   = ms the text is visible (after entrance animation completes)
+    // anim = entrance style
+    // punch / climax = special effects
     const SEQ = [
-      { t: `${name}...`,                                   p: 1000 },
-      { t: `Today, the world may seem small.`,             p: 1500 },
-      { t: `Its challenges, immense.`,                     p: 1500 },
-      { t: `But you are not defined by obstacles.`,        p: 1800 },
-      { t: `You are defined by your spirit.`,              p: 1800 },
-      { t: `${name}...`,                                   p: 1000 },
-      { t: `The mountains you face?`,                      p: 1500 },
-      { t: `THEY ARE DUST!`,                               p: 1500, punch: true },
-      { t: `The oceans you must cross?`,                   p: 1500 },
-      { t: `A MERE PUDDLE!`,                               p: 1500, punch: true },
-      { t: `Because you have the power...`,                p: 1800 },
-      { t: `...to reshape destiny.`,                       p: 1800 },
-      { t: `${name}...`,                                   p: 1000 },
-      { t: `The shadows retreat from your light.`,         p: 2000 },
-      { t: `The very stars align for your purpose.`,       p: 2000 },
-      { t: `So rise...`,                                   p: 1500 },
-      { t: `Rise above it all.`,                           p: 1800 },
-      { t: `Do not just survive.`,                         p: 1800 },
-      { t: `CONQUER!`,                                     p: 1000, punch: true },
-      { t: `Because ${name}...`,                           p: 1000 },
-      { t: `${nl}.youaremighty.com`,                       p: 2000 },
-      { t: `YOU ARE MIGHTY!`,                              p: 4000, climax: true },
-      { t: ``,                                             p: 2500 }, // silent beat before loop
+      { t: `${name}...`,                                 p: 2200, anim: 'zoom'    },
+      { t: `Today, the world may seem small.`,           p: 2600, anim: 'rise'    },
+      { t: `Its challenges, immense.`,                   p: 2600, anim: 'rise'    },
+      { t: `But you are not defined by obstacles.`,      p: 3000, anim: 'drift'   },
+      { t: `You are defined by your spirit.`,            p: 3000, anim: 'drift'   },
+      { t: `${name}...`,                                 p: 2200, anim: 'zoom'    },
+      { t: `The mountains you face?`,                    p: 2400, anim: 'descend' },
+      { t: `THEY ARE DUST!`,                             p: 2400, anim: 'slam',   punch: true },
+      { t: `The oceans you must cross?`,                 p: 2400, anim: 'descend' },
+      { t: `A MERE PUDDLE!`,                             p: 2400, anim: 'slam',   punch: true },
+      { t: `Because you have the power...`,              p: 3000, anim: 'rise'    },
+      { t: `...to reshape destiny.`,                     p: 3000, anim: 'rise'    },
+      { t: `${name}...`,                                 p: 2200, anim: 'zoom'    },
+      { t: `The shadows retreat from your light.`,       p: 3200, anim: 'drift'   },
+      { t: `The very stars align for your purpose.`,     p: 3200, anim: 'drift'   },
+      { t: `So rise...`,                                 p: 2400, anim: 'rise'    },
+      { t: `Rise above it all.`,                         p: 3000, anim: 'rise'    },
+      { t: `Do not just survive.`,                       p: 3000, anim: 'descend' },
+      { t: `CONQUER!`,                                   p: 2200, anim: 'slam',   punch: true },
+      { t: `Because ${name}...`,                         p: 2200, anim: 'zoom'    },
+      { t: `${name}...`,                                 p: 1800, anim: 'zoom'    },
+      { t: `YOU ARE MIGHTY!`,                            p: 5000, anim: 'surge',  climax: true },
+      { t: ``,                                           p: 3500 },
     ];
 
     /* ── DOM refs ────────────────────────────────────────────── */
@@ -275,12 +318,12 @@
 
     function addSpark() {
       sparks.push({
-        x: Math.random() * canvas.width,
-        y: canvas.height + 4,
-        vx: (Math.random() - 0.5) * 2.4,
-        vy: -(Math.random() * 3.5 + 1.5),
-        r: Math.random() * 3.2 + 0.8,
-        a: 1,
+        x:    Math.random() * canvas.width,
+        y:    canvas.height + 4,
+        vx:   (Math.random() - 0.5) * 2.4,
+        vy:   -(Math.random() * 3.5 + 1.5),
+        r:    Math.random() * 3.2 + 0.8,
+        a:    1,
         gold: Math.random() > 0.4,
       });
     }
@@ -291,9 +334,9 @@
       for (const s of sparks) {
         ctx.save();
         ctx.globalAlpha = s.a;
-        ctx.shadowColor  = s.gold ? '#FFD700' : '#FFA500';
-        ctx.shadowBlur   = 10;
-        ctx.fillStyle    = s.gold ? '#FFD700' : '#FFA500';
+        ctx.shadowColor = s.gold ? '#FFD700' : '#FFA500';
+        ctx.shadowBlur  = 10;
+        ctx.fillStyle   = s.gold ? '#FFD700' : '#FFA500';
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
@@ -304,17 +347,12 @@
       }
       requestAnimationFrame(drawSparks);
     }
-    drawSparks(); // always running; only sparks[] has content during climax
+    drawSparks();
 
-    function startSparks() {
-      spawnTimer = setInterval(addSpark, 28);
-    }
-    function stopSparks() {
-      clearInterval(spawnTimer);
-      spawnTimer = null;
-    }
+    function startSparks() { spawnTimer = setInterval(addSpark, 28); }
+    function stopSparks()  { clearInterval(spawnTimer); spawnTimer = null; }
 
-    /* ── Flash effect ────────────────────────────────────────── */
+    /* ── Flash ───────────────────────────────────────────────── */
     function flash(intensity = 0.28) {
       flashEl.style.transition = 'none';
       flashEl.style.opacity = intensity;
@@ -328,14 +366,22 @@
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     async function show(slide) {
-      phraseEl.classList.remove('visible', 'climax');
-      await sleep(360); // wait for fade-out
+      // Exit: inline style overrides any animation-fill-mode
+      phraseEl.style.animation = 'fadeOut 0.42s ease forwards';
+      await sleep(450);
+
+      // Full reset before next entrance
+      phraseEl.style.animation = '';
+      phraseEl.className = '';
 
       if (!slide.t) { await sleep(slide.p); return; }
 
       phraseEl.textContent = slide.t;
       if (slide.climax) phraseEl.classList.add('climax');
-      phraseEl.classList.add('visible');
+
+      // One rAF gap so the browser registers the class reset before adding the new one
+      await new Promise(r => requestAnimationFrame(r));
+      phraseEl.classList.add(`anim-${slide.anim}`);
 
       if (slide.climax) { startSparks(); flash(0.22); }
       else if (slide.punch) { flash(0.13); }
@@ -353,7 +399,6 @@
       entryEl.style.opacity = '0';
       setTimeout(() => { entryEl.style.display = 'none'; }, 700);
 
-      // Fade-in audio
       audio.volume = 0;
       audio.play().then(() => {
         let v = 0;
@@ -363,7 +408,7 @@
           if (v >= 0.72) clearInterval(t);
         }, 55);
       }).catch(() => {
-        console.info('[YouAreMighty] Audio unavailable — add a hosted MP3 to the <audio> src.');
+        console.info('[YouAreMighty] Audio unavailable.');
       });
 
       loop();
