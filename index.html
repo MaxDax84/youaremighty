@@ -240,6 +240,7 @@
       : 'You';
 
     /* ── Dynamic meta ────────────────────────────────────────── */
+    document.getElementById('entry-title').textContent = name.toUpperCase();
     document.title = `${name} — You Are Mighty`;
     const desc = `${name}, you are mighty. The world bows to your spirit.`;
     document.querySelector('meta[name="description"]').content = desc;
