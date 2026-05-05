@@ -106,6 +106,9 @@
       display: flex; align-items: center; justify-content: center;
       padding: 3rem;
     }
+    @media (max-width: 500px) {
+      #stage { padding: 1.2rem; }
+    }
 
     #phrase {
       font-weight: 700; color: var(--gold);
@@ -123,8 +126,8 @@
     /* ── Size variants ────────────────────────────────────── */
     .sz-sm { font-size: clamp(1.9rem, 3.8vw, 3rem);  letter-spacing: 0.22em; }
     .sz-md { font-size: clamp(1.8rem, 4.2vw, 3.8rem); letter-spacing: 0.04em; }
-    .sz-lg { font-size: clamp(2.8rem, 6vw,   5.2rem); letter-spacing: 0.06em; }
-    .sz-xl { font-size: clamp(4rem,   8.5vw, 7rem);   letter-spacing: 0.1em;  }
+    .sz-lg { font-size: clamp(1.8rem, 6vw,   5.2rem); letter-spacing: 0.06em; }
+    .sz-xl { font-size: clamp(2.2rem, 8.5vw, 7rem);   letter-spacing: 0.1em;  }
 
     /* ── Whole-phrase entrance animations ─────────────────── */
     @keyframes riseUp {
@@ -252,11 +255,17 @@
     /* ── Letter builder ──────────────────────────────────────── */
     // Splits text into individually-animated <span>s with staggered delay.
     function buildLetters(text, cls, staggerMs) {
-      return [...text].map((ch, i) => {
-        if (ch === ' ') return `<span style="display:inline-block;min-width:0.28em"> </span>`;
-        const delay = (i * staggerMs / 1000).toFixed(3);
-        return `<span class="${cls}" style="animation-delay:${delay}s">${ch}</span>`;
-      }).join('');
+      // Wrap each word in a nowrap inline-block so lines break between words,
+      // never mid-word — critical on mobile where font-size is large.
+      let i = 0;
+      return text.split(' ').map(word => {
+        const letters = [...word].map(ch => {
+          const delay = (i++ * staggerMs / 1000).toFixed(3);
+          return `<span class="${cls}" style="animation-delay:${delay}s">${ch}</span>`;
+        }).join('');
+        i++; // keep stagger timing in sync with the space character
+        return `<span style="display:inline-block;white-space:nowrap">${letters}</span>`;
+      }).join(' ');
     }
 
     /* ── Sequence ────────────────────────────────────────────── */
