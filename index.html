@@ -229,7 +229,7 @@
 </head>
 <body>
 
-  <video id="bg-video" autoplay muted loop playsinline>
+  <video id="bg-video" autoplay muted loop playsinline webkit-playsinline x5-playsinline>
     <source src="https://videos.pexels.com/video-files/856974/856974-hd_1920_1080_25fps.mp4" type="video/mp4">
   </video>
   <div class="vignette"></div>
@@ -429,6 +429,11 @@
 
       // Force video play after user gesture — unblocks autoplay on all browsers
       bgVideo.play().catch(() => { bgVideo.style.display = 'none'; });
+      // On mobile the video may load but stay paused (CORS / codec issues).
+      // Check 1.5s after click: if still paused, hide it — CSS gradient takes over.
+      setTimeout(() => {
+        if (bgVideo.paused) bgVideo.style.display = 'none';
+      }, 1500);
 
       audio.volume = 0;
       audio.play().then(() => {
